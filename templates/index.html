@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>AI News Tracking</title>
+
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        h1 { margin-bottom: 20px; }
+        .add-form { margin-bottom: 20px; }
+        .keyword-bar { margin-bottom: 30px; }
+
+        .keyword-btn {
+            display: inline-block;
+            padding: 6px 12px;
+            margin: 4px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            text-decoration: none;
+            color: black;
+            font-size: 14px;
+        }
+
+        .keyword-btn.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .config-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+
+        .news-item {
+            border-bottom: 1px solid #ddd;
+            padding: 20px 0;
+        }
+
+        .field {
+            margin: 5px 0;
+        }
+
+        .toggle-btn {
+            cursor: pointer;
+            color: #007bff;
+            font-size: 14px;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        .hidden-content {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+    </style>
+
+    <script>
+        function toggleContent(id) {
+            var element = document.getElementById(id);
+            if (element.style.display === "none") {
+                element.style.display = "block";
+            } else {
+                element.style.display = "none";
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<h1>AI 新闻系统</h1>
+
+<!-- 添加关键词 -->
+<div class="add-form">
+    <form method="post" action="/keyword/add">
+        <input type="text" name="name" placeholder="新增关键词" required>
+        <button type="submit">添加</button>
+    </form>
+</div>
+
+<!-- 关键词栏 -->
+<div class="keyword-bar">
+    <a href="/"
+       class="keyword-btn {% if not keyword %}active{% endif %}">
+        全部
+    </a>
+
+    {% for k in keywords %}
+        <a href="/?keyword={{ k.name }}"
+           class="keyword-btn {% if keyword == k.name %}active{% endif %}">
+            {{ k.name }}
+        </a>
+    {% endfor %}
+</div>
+
+<hr>
+
+<h2>专栏邮件设置</h2>
+
+{% for k in keywords %}
+<div class="config-box">
+    <form method="post" action="/keyword/config/{{ k.id }}">
+        <strong>{{ k.name }}</strong><br><br>
+
+        <label>
+            <input type="checkbox" name="enable_digest"
+            {% if k.config and k.config.enable_digest %}checked{% endif %}>
+            启用定时汇总
+        </label>
+
+        <input type="time" name="digest_time"
+        value="{{ k.config.digest_time if k.config else '22:30' }}">
+
+        <br><br>
+
+        <label>
+            <input type="checkbox" name="enable_immediate"
+            {% if k.config and k.config.enable_immediate %}checked{% endif %}>
+            启用即时邮件
+        </label>
+
+        <br><br>
+
+        <button type="submit">保存设置</button>
+    </form>
+</div>
+{% endfor %}
+
+<hr>
+
+<!-- 原始新闻列表（完全保留） -->
+{% if news_list %}
+    {% for news in news_list %}
+        <div class="news-item">
+
+            <h2>{{ news.title }}</h2>
+
+            <div class="field">
+                <strong>来源：</strong> {{ news.source }}
+            </div>
+
+            <div class="field">
+                <strong>发布时间：</strong> {{ news.published_at }}
+            </div>
+
+            <div class="field">
+                <strong>地区：</strong> {{ news.region }}
+            </div>
+
+            <div class="field">
+                <strong>领域：</strong>
+                {% if news.domain %}
+                    {{ news.domain | join(", ") }}
+                {% else %}
+                    无
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <strong>主要单位：</strong>
+                {% if news.main_entities %}
+                    {{ news.main_entities | join(", ") }}
+                {% else %}
+                    无
+                {% endif %}
+            </div>
+
+            <div class="toggle-btn"
+                 onclick="toggleContent('extra-{{ news.id }}')">
+                ▼ 查看详情
+            </div>
+
+            <div id="extra-{{ news.id }}" class="hidden-content">
+
+                <div>
+                    <strong>原始链接：</strong><br>
+                    <a href="{{ news.url }}" target="_blank">
+                        {{ news.url }}
+                    </a>
+                </div>
+
+                <br>
+
+                <div>
+                    <strong>内容摘要：</strong><br>
+                    {{ news.summary }}
+                </div>
+
+            </div>
+
+        </div>
+    {% endfor %}
+{% else %}
+    <p>暂无新闻</p>
+{% endif %}
+
+</body>
+</html>
