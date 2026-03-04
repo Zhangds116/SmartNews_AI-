@@ -110,7 +110,7 @@ python app.py
 bash
 python auto_pipeline.py
 系统将每 30 分钟自动抓取并分析新闻。
-
+---
 ##  🔁 去重机制
 使用 Redis 实现三日去重：
 
