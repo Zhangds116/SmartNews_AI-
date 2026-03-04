@@ -81,11 +81,14 @@
 ```bash
 git clone https://github.com/yourname/ai-news-tracking.git
 cd ai-news-tracking
+```
 ###  2️⃣ 安装依赖
-bash
+```bash
 pip install -r requirements.txt
+```
 ###  3️⃣ 配置 config.py
-python
+```bash
+
 DATABASE_URL = "数据库路径"
 API_URL = "https://orz.ai/api/v1/dailynews/?platform=tenxunwang"
 OLLAMA_MODEL = "ollama部署的大模型名称"
@@ -95,21 +98,26 @@ EMAIL_PORT = 465
 EMAIL_USER = "你的邮箱"
 EMAIL_PASSWORD = "邮箱授权码"
 EMAIL_TO = "接收邮箱"
+```
 ###   4️⃣ 启动 Redis
-bash
+```bash
 redis-server
+```
 ###   5️⃣ 启动 Ollama
-bash
+```bash
 ollama run qwen3:8b
+```
 ###   6️⃣ 启动 Web 服务
-bash
+```bash
 python app.py
 访问：http://127.0.0.1:8000
+```
 
 ###   7️⃣ 启动新闻抓取服务
-bash
+```bash
 python auto_pipeline.py
 系统将每 30 分钟自动抓取并分析新闻。
+```
 ---
 ##  🔁 去重机制
 使用 Redis 实现三日去重：
